@@ -11,3 +11,5 @@ Como criar o banco de dados?
 - Abra o arquivo segeis_4_1_criacao_banco_de_dados, selecione todo o conteudo com o comando "ctrl + a" e execute com o "ctrl + "espaco"),
 - repita o mesmo processo com oarquivo segeis_4_1_insercoes para criar os dados de teste.
 - Agora seu banco de dados já está criado.
+
+Prototipo interativo da aplicação: https://www.figma.com/proto/3DH3onYWloKpQFzV4YcWyo/Segeis_semana_4_1?node-id=5-703&t=C7HgniuKYRptFuRW-1&scaling=contain&content-scaling=fixed&page-id=1%3A2&starting-point-node-id=5%3A527
