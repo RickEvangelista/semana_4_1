@@ -14,6 +14,8 @@ export async function listTickets() {
         setor: {
           select: {
             titulo: true,
+            id_setor: true,
+            evento: true,
           },
         },
       },

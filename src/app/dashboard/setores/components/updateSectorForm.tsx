@@ -23,6 +23,11 @@ function FormUpdateSector({ events, sector }: SectorFormProps) {
     initialState
   );
 
+  const eventsList = events.map((evento) => ({
+          label: evento.titulo,
+          value: evento.id_evento,
+        }));
+
   return (
     <form
       action={dispatch}
@@ -48,10 +53,7 @@ function FormUpdateSector({ events, sector }: SectorFormProps) {
         placeholder={"Selecione o evento"}
         name={"evento_id_evento"}
         label={"Evento: "}
-        options={events.map((evento) => ({
-          label: evento.titulo,
-          value: evento.id_evento,
-        }))}
+        options={eventsList}
         defaultValue={sector.evento_id_evento}
       />
       <Button

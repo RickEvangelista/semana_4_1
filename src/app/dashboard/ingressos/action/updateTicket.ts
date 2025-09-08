@@ -1,16 +1,15 @@
 "use server";
 import { FormState } from "@/types/formState";
-
-import { UpdateUserFormData, userSchemaUpdate } from "../schemas/ticketSchema";
-import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { ticketSchema } from "../schemas/ticketSchema";
 
-export async function updateUser(
-  id_usuario: number,
+
+export async function updateTicket(
+  id_ingresso: number,
   formData: FormData
 ): Promise<FormState> {
-  const validateData = userSchemaUpdate.safeParse(
+  const validateData = ticketSchema.safeParse(
     Object.fromEntries(formData.entries())
   );
 
@@ -21,52 +20,38 @@ export async function updateUser(
     };
   }
 
-  const { nome_completo, cpf, email, senha, perfil } =
-    validateData.data as UpdateUserFormData;
-
+  const { nome_completo, cpf, email, setor_id_setor, situacao  } =
+    validateData.data;
+  
   try {
-    const user = await prisma.usuario.findUnique({
+    const sector = await prisma.setor.findUnique({
       where: {
-        id_usuario,
+        id_setor: setor_id_setor,
       },
-    });
-
-    if (!user) return { success: false, message: "Usuário não encontrado" };
-
-    const hashPassword = senha ? await bcrypt.hash(senha, 12) : undefined;
-
-    const userProfile = await prisma.perfil.findUnique({
-      where: {
-        titulo: perfil,
-      },
-    });
-
-    if (!userProfile)
-      return { success: false, message: "Perfil não encontrado" };
-
-    const updateUser = await prisma.usuario.update({
-      where: { id_usuario },
+    })
+    if(!sector) return { success: false, message: "Setor não encontrado" }
+    const updatedTicket = await prisma.ingresso.update({
+      where: {id_ingresso},
       data: {
         nome_completo,
-        email,
         cpf,
-        ...(hashPassword ? { senha: hashPassword } : {}),
-        perfil_id_perfil: userProfile.id_perfil,
+        email,
+        setor_id_setor: sector?.id_setor,
       },
     });
 
-    revalidatePath("/dashboard/usuarios");
+    revalidatePath("/dashboard/ingressos");
 
     return {
       success: true,
-      message: `Usuário "${updateUser.nome_completo}" atualizado com sucesso! `,
+      message: `Ingresso "${updatedTicket.nome_completo}" criado com sucesso! `,
     };
   } catch (error: any) {
     console.error(error);
     if (error.code === "P2002") {
-      return { success: false, message: "Usuário já cadastrado no sistema" };
+      return { success: false, message: "Ingresso com código duplicado, tente novamente" };
     }
   }
 
-  return { success: false, message: "Falha ao atualizar usuário" };
+  return { success: false, message: "Falha ao atualizar ingresso usuário" };
 }

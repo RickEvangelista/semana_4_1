@@ -13,7 +13,7 @@ async function page({ params }: { params: Promise<{ id: string }> }) {
   });
 
   if (!sector) {
-    return <p>Usuário não encontrado</p>;
+    return <p>Setor não encontrado</p>;
   }
 
   const events = await prisma.evento.findMany({

@@ -36,12 +36,23 @@ export async function updateSector(
       return { success: false, message: "Evento não encontrado" };
     }
 
+    const oldSectorCapacity = await prisma.setor.findUnique({
+      where: { id_setor },
+      select: {
+        capacidade_total: true,
+      },
+    });
+
+    if (!oldSectorCapacity) {
+      return { success: false, message: "Setor não encontrado" };
+    }
+
     const existingCapacity = event.setor.reduce(
       (acc, s) => acc + s.capacidade_total,
       0
     );
 
-    const newCapacity = existingCapacity + capacidade_total;
+    const newCapacity = existingCapacity + capacidade_total - oldSectorCapacity.capacidade_total;
     if (newCapacity > event.capacidade_total) {
       return {
         success: false,

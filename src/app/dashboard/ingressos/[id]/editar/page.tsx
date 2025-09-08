@@ -1,26 +1,34 @@
 import React from 'react'
-import FormUpdateUser from '../../components/updateTicketForm';
 import prisma from '@/lib/prisma';
+import { getEvents, getSectorLocation } from '@/lib/utilis';
+import FormUpdateTicket from '../../components/updateTicketForm';
 
 async function page({params} : {params: Promise<{ id: string}> }) {
     const { id } = await params;
+      const eventsData = await getEvents()
+      const data = await getSectorLocation()
 
-    const user = await prisma.usuario.findUnique({
+    const ticket = await prisma.ingresso.findUnique({
         where: {
-            id_usuario: Number(id)
+            id_ingresso: Number(id)
         },
         include: {
-            perfil: true
+            setor: {
+                include: {
+                    evento: true,
+                }
+            }
         }
     })
 
-    if (!user) {
-        return <p>Usuário não encontrado</p>
+    if (!ticket) {
+        return <p>Ingresso não encontrado</p>
     }
 
   return (
     <div className='w-full min-h-screen flex justify-center items-center'>
-        <FormUpdateUser user={user} />
+        <FormUpdateTicket ticket={ticket}
+         events={eventsData} sectors={data} />
     </div>
   )
 }

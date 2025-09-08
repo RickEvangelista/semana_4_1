@@ -40,8 +40,8 @@ export default function SectorList({ sectors }: sectorListProps) {
                 title={setor.titulo}
                 content={
                   <>
-                  <p>{setor.evento.titulo}</p>
-                    <p>{`Capacidade: ${setor.capacidade_atual} / ${setor.capacidade_total}`}</p>
+                  <p>{setor.evento?.titulo}</p>
+                    <p>{`Capacidade: ${setor.capacidade_total} / ${setor.capacidade_total}`}</p>
                   </>
                 }
                 actions={

@@ -1,14 +1,15 @@
 import React from "react";
-import FormCreateUser from "../components/createTicketForm";
 import FormCreateTicket from "../components/createTicketForm";
+import prisma from "@/lib/prisma";
+import { getEvents, getSectorLocation } from "@/lib/utilis";
+
 
 async function page() {
-    const events = await prisma.
-
-
+  const eventsData = await getEvents()
+  const data = await getSectorLocation()
   return (
     <div className="w-full min-h-screen flex justify-center items-center">
-      <FormCreateTicket events={[]} sectors={[]}/>
+      <FormCreateTicket events={eventsData} sectors={data} />
     </div>
   );
 }

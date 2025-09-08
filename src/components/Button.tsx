@@ -7,23 +7,22 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	className?: string;
 }
 
-function Button({ children, variant = "primary", className, ...props }: ButtonProps) {
+function Button({ children, variant = "primary",disabled, className, ...props }: ButtonProps) {
 	
-	const base = `rounded-md hover:brightness-70 transition font-semibold`;
-	
+	const base = `rounded-md font-semibold ${disabled ? 'opacity-50 cursor-not-allowed' : "hover:brightness-70 transition"}`;
 	
 	const buttonClass = clsx(
 		base,
 		{
-			"bg-custom-blue text-white  p-3": variant === "primary",
+			"bg-custom-blue text-white p-3": variant === "primary",
 			"bg-white text-custom-blue border-custom-blue border-4 p-2": variant === "secondary",
-			"bg-custom-pink text-white  p-3": variant === "danger"
+			"bg-custom-pink text-white p-3": variant === "danger",
 		},
 		className
 	)
 
 	return (
-		<button className={buttonClass} {...props}>
+		<button className={buttonClass} {...props} disabled={disabled}>
 			{children}
 		</button>
 	);

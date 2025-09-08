@@ -9,6 +9,7 @@ import React, { useActionState } from "react";
 import { usuario, perfil } from "@prisma/client";
 import { updateUser } from "../action/updateUser";
 import { FormState } from "@/types/formState";
+import InputMasked from "@/components/InputMasked";
 
 export interface user extends usuario {
   perfil: perfil;
@@ -44,10 +45,11 @@ function FormUpdateUser({ user }: { user: user}) {
         placeholder="Digite o seu nome email"
         defaultValue={user.email}
       />
-      <Input
+      <InputMasked
         label={"CPF:"}
         name={"cpf"}
-        placeholder="Digite o seu nome completo"
+        placeholder="Digite o cpf"
+        mask={"000.000.000-00"}
         defaultValue={user.cpf}
       />
       <Input

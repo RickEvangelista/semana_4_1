@@ -16,7 +16,7 @@ async function page() {
         <div className="flex flex-col md:flex-row">
           <Link href={`/dashboard/ingressos/criar`}>
             <Button variant="primary" className={"w-40"}>
-              Novo usuário
+              Novo ingresso
             </Button>
           </Link>
         </div>

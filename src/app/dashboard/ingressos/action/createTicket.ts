@@ -1,15 +1,16 @@
 "use server";
 import { FormState } from "@/types/formState";
-import { NewUserFormData, userSchemaCreate } from "../schemas/ticketSchema";
-import bcrypt from "bcryptjs";
 import prisma from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { ticketSchema } from "../schemas/ticketSchema";
+import { customAlphabet } from "nanoid";
+import { ingresso_situacao } from "@prisma/client";
 
 export async function createTicket(
   prevState: FormState,
   formData: FormData
 ): Promise<FormState> {
-  const validateData = userSchemaCreate.safeParse(
+  const validateData = ticketSchema.safeParse(
     Object.fromEntries(formData.entries())
   );
 
@@ -20,41 +21,69 @@ export async function createTicket(
     };
   }
 
-  const { nome_completo, cpf, email, senha, perfil } =
-    validateData.data as NewUserFormData;
+  const { nome_completo, cpf, email, setor_id_setor } = validateData.data;
+
+  const nanoid = customAlphabet("ABCDEFGHiJKLMNOPQRSTUVWXYZ0123456789", 6);
+
+  const sector = await prisma.setor.findUnique({
+    where: {
+      id_setor: setor_id_setor,
+    },
+    select: { evento_id_evento: true, id_setor: true, capacidade_total: true },
+  });
+
+  if (!sector) return { success: false, message: "Setor não encontrado" };
+
+  const soldTickets = await prisma.ingresso.count({
+    where: {
+      setor_id_setor,
+      situacao: { in: [ingresso_situacao.ativo, ingresso_situacao.utilizado] },
+    },
+  });
+
+  if(soldTickets >= sector.capacidade_total) return { success: false, message: "Capacidade esgotada" };
+
+  const ticketForCpf = await prisma.ingresso.count({
+    where: {
+      cpf,
+      setor: { evento_id_evento: sector.evento_id_evento },
+    },
+  });
+
+  if (ticketForCpf >= 5)
+    return {
+      success: false,
+      message: "Limite de 5 ingressos para esse CPF já foi atingido",
+    };
 
   try {
-    const hashPassword = await bcrypt.hash(senha, 12);
+    const codigo = nanoid();
 
-    const profile = await prisma.perfil.findUnique({
-      where: {
-        titulo: perfil,
-      },
-    });
-
-    if (!profile) return { success: false, message: "Perfil não encontrado" };
-
-    const createdUser = await prisma.usuario.create({
+    const createdTicket = await prisma.ingresso.create({
       data: {
+        codigo,
         nome_completo,
         cpf,
         email,
-        senha: hashPassword,
-        perfil_id_perfil: profile.id_perfil,
+        situacao: ingresso_situacao.ativo,
+        setor_id_setor: sector?.id_setor,
         criador_id_usuario: 1,
       },
     });
 
-    revalidatePath("/dashboard/usuarios");
+    revalidatePath("/dashboard/ingressos");
 
     return {
       success: true,
-      message: `Usuário "${createdUser.nome_completo}" criado com sucesso! `,
+      message: `Ingresso "${createdTicket.nome_completo}" criado com sucesso! `,
     };
   } catch (error: any) {
     console.error(error);
     if (error.code === "P2002") {
-      return { success: false, message: "Usuário já cadastrado no sistema" };
+      return {
+        success: false,
+        message: "Ingresso com código duplicado, tente novamente",
+      };
     }
   }
 

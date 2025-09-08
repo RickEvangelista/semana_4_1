@@ -4,7 +4,7 @@ import { EventListItemSector } from "./event";
 export interface SectorListItem {
   id_setor: number;
   titulo: string;
-  capacidade_atual: number;
-  capacidade_total: number;
-  evento: EventListItemSector;
+  capacidade_total?: number;
+  evento_id_evento: number;
+  evento?: EventListItemSector;
 }
