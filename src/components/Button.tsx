@@ -7,7 +7,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 	className?: string;
 }
 
-function Button({ children, variant = "primary",disabled, className, ...props }: ButtonProps) {
+function Button({ children, variant = "primary", disabled, className, ...props }: ButtonProps) {
 	
 	const base = `rounded-md font-semibold ${disabled ? 'opacity-50 cursor-not-allowed' : "hover:brightness-70 transition"}`;
 	

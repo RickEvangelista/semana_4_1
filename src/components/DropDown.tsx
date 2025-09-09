@@ -18,7 +18,7 @@ function DropDown({
       <label className="text-2xl text-custom-black" htmlFor={rest.name}>
         {label}
       </label>
-      <select
+      <select 
         className="mt-1 block w-full shadow-sm p-3 border-2 rounded-md"
         required={required}
         {...rest}
